@@ -1,0 +1,30 @@
+# intellij
+/.idea
+*.iml
+
+# eclipse
+.classpath
+.settings
+.project
+.metadata
+.buildpath
+
+# vi
+*.swp
+
+# maven
+target
+
+# temporary stuff
+*.tmp
+*.bak
+*.log
+
+# codevalidator
+*.pre-cvfix
+
+#Mac
+.DS_Store
+
+# swagger
+/src/main/resources/swagger.yaml
