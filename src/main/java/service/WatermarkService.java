@@ -62,7 +62,9 @@ public class WatermarkService extends AbstractVerticle {
     }
 
     private void simulateWatermarkProcess(String uuid, WatermarkDocument document) {
-        vertx.setTimer(20000, event -> {
+        Integer delay = config().getInteger("watermark.delay");
+
+        vertx.setTimer(delay, event -> {
             WatermarkDocument watermarkedDocument = watermarkStorage.get(uuid);
             watermarkedDocument.setWatermark(createSimulatedWatermark(watermarkedDocument));
             watermarkStorage.put(uuid, document);

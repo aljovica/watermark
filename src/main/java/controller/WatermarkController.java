@@ -21,7 +21,7 @@ import static io.vertx.core.http.HttpMethod.POST;
 
 public class WatermarkController extends AbstractVerticle {
     private static final String DOCUMENT_PATH = "/document";
-    private static final String WATERMARK_PATH = "/watermark";
+    private static final String WATERMARK_PATH = "/watermark/:id";
     private static final String DOCUMENT_ID = "id";
 
     public static final String DOCUMENT_CREATE_ADDRESS = "document.create";
@@ -35,8 +35,8 @@ public class WatermarkController extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
 
         router.route(POST, DOCUMENT_PATH).handler(this::handleCreateWatermarkDocument);
-        router.route(GET, String.format("%s/:%s", WATERMARK_PATH, DOCUMENT_ID)).handler(this::handleGetWatermarkDocument);
-        router.route(HEAD, String.format("%s/:%s", WATERMARK_PATH, DOCUMENT_ID)).handler(this::handleWatermarkDocumentExists);
+        router.route(GET, WATERMARK_PATH).handler(this::handleGetWatermarkDocument);
+        router.route(HEAD, WATERMARK_PATH).handler(this::handleWatermarkDocumentExists);
 
         server.requestHandler(router::accept).listen(8080);
     }
