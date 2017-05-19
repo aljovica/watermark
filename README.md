@@ -4,7 +4,7 @@ To run and build (with tests) the application just run the following command:
 ```
 To application is running on localhost:8080, but it can be changed in application-configuration.json file.
 
-The watermark process is simulated with a timer. The timer be configured in the same config file.
+The watermark process is simulated with a timer. The timer can be configured in the same config file.
 
 Three endpoints are exposed:
 
