@@ -1,4 +1,4 @@
 {
   "watermark.delay": 1000,
-  "server.port": 8090
+  "server.port": 8080
 }

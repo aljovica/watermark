@@ -20,7 +20,7 @@ public class WatermarkIntegrationTest {
     private static final String DOCUMENT_RESOURCE = "/document";
     private static final String WATERMARK = "watermark";
     private static final String DOCUMENT_ID = "id";
-    private static final int PORT = 8090;
+    private static final int PORT = 8080;
 
     private Vertx vertx;
 
