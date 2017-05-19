@@ -1,12 +1,11 @@
-import controller.WatermarkController;
+import controller.DocumentController;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.WatermarkService;
+import service.DocumentService;
 
 public class MainVerticle extends AbstractVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(MainVerticle.class);
@@ -14,9 +13,7 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        Vertx vertx = Vertx.vertx();
-
-        final JsonObject config = new JsonObject();
+        JsonObject config = new JsonObject();
         vertx.fileSystem().readFile(CONFIG_FILE, result -> {
             Buffer buff = result.result();
             config.mergeIn(new JsonObject(buff.toString()));
@@ -24,11 +21,10 @@ public class MainVerticle extends AbstractVerticle {
             DeploymentOptions deploymentOptions = new DeploymentOptions();
             deploymentOptions.setConfig(config);
 
-            vertx.deployVerticle(WatermarkController.class.getName(), deploymentOptions);
-            vertx.deployVerticle(WatermarkService.class.getName(), deploymentOptions);
+            vertx.deployVerticle(DocumentController.class.getName(), deploymentOptions);
+            vertx.deployVerticle(DocumentService.class.getName(), deploymentOptions);
 
             LOG.info("Application started");
         });
-
     }
 }

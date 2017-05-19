@@ -1,11 +1,11 @@
 package model;
 
-public abstract class WatermarkDocument {
+public abstract class Document {
     private String title;
     private String author;
     private String watermark;
 
-    public WatermarkDocument(String title, String author) {
+    public Document(String title, String author) {
         this.title = title;
         this.author = author;
     }
@@ -22,7 +22,7 @@ public abstract class WatermarkDocument {
         return watermark;
     }
 
-    public void setWatermark(final String watermark) {
+    public void setWatermark(String watermark) {
         this.watermark = watermark;
     }
 }

@@ -1,12 +1,12 @@
 package model;
 
-public class WatermarkBook extends WatermarkDocument {
+public class Book extends Document {
     public static final String CONTENT = "book";
 
     private final String content;
     private final String topic;
 
-    public WatermarkBook(String title, String author, String topic) {
+    public Book(String title, String author, String topic) {
         super(title, author);
 
         this.topic = topic;

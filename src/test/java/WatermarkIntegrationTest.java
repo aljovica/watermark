@@ -5,59 +5,68 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static addresses.Addresses.WATERMARK_FINISHED_ADDRESS;
 import static java.lang.String.valueOf;
 
 @RunWith(VertxUnitRunner.class)
 public class WatermarkIntegrationTest {
 
     private static final String HOST = "localhost";
-    private static final String DOCUMENT_URI = "/document";
-    private static final String WATERMARK_URI = "/watermark";
+    private static final String DOCUMENT_RESOURCE = "/document";
     private static final String WATERMARK = "watermark";
-    private static final int PORT = 8080;
+    private static final String DOCUMENT_ID = "id";
+    private static final int PORT = 8090;
+
+    private Vertx vertx;
+
     @Rule
     public RunTestOnContext rule = new RunTestOnContext();
+
+    @Before
+    public void before() {
+        vertx = rule.vertx();
+    }
 
     @Test
     public void test(TestContext context) {
         Async async = context.async();
 
-        Vertx vertx = rule.vertx();
-
         vertx.deployVerticle(MainVerticle.class.getName(), event -> {
             HttpClient client = vertx.createHttpClient();
-
             String requestBody = createTestBody();
 
-            client.post(PORT, HOST, DOCUMENT_URI, response -> response.bodyHandler(documentBody -> {
-                String id = new JsonObject(documentBody.toString()).getString("id");
-                // Get watermark immediately
-                client.get(PORT, HOST, WATERMARK_URI + "/" + id, watermarkResponse -> watermarkResponse.bodyHandler(watermarkBody -> {
-                    JsonObject watermarkJson = new JsonObject(watermarkBody.toString());
+            client.post(PORT, HOST, DOCUMENT_RESOURCE, postResponse -> postResponse.bodyHandler(postResponseBody -> {
+                String id = new JsonObject(postResponseBody.toString()).getString(DOCUMENT_ID);
+
+                // Get the document immediately
+                client.get(PORT, HOST, DOCUMENT_RESOURCE + "/" + id, getResponse -> getResponse.bodyHandler(getResponseBody -> {
+                    JsonObject watermarkJson = new JsonObject(getResponseBody.toString());
                     assertMainFields(context, watermarkJson);
                     context.assertNull(watermarkJson.getString(WATERMARK));
                 })).end();
-                // Get watermark after 3 seconds. Watermark process takes 2 seconds to finish
 
-                vertx.setTimer(3000, timer -> client.get(PORT, HOST, WATERMARK_URI + "/" + id, watermarkResponse -> watermarkResponse.bodyHandler(watermarkBody -> {
-                    JsonObject watermarkJson = new JsonObject(watermarkBody.toString());
-                    assertMainFields(context, watermarkJson);
-                    context.assertNotNull(watermarkJson.getString(WATERMARK));
-                    async.complete();
-                })).end());
+                // Get the document after the watermark process is finished
+                vertx.eventBus().consumer(WATERMARK_FINISHED_ADDRESS, eventResponse -> {
+                    client.get(PORT, HOST, DOCUMENT_RESOURCE + "/" + id, getResponse -> getResponse.bodyHandler(getResponseBody -> {
+                        JsonObject watermarkJson = new JsonObject(getResponseBody.toString());
+                        assertMainFields(context, watermarkJson);
+                        context.assertNotNull(watermarkJson.getString(WATERMARK));
+                        async.complete();
+                    })).end();
+                });
             }))
             .putHeader("content-length", valueOf(requestBody.length()))
-            .putHeader("content-type", "application/json")
             .write(requestBody).end();
         });
 
     }
 
-    private void assertMainFields(final TestContext context, final JsonObject watermarkJson) {
+    private void assertMainFields(TestContext context, JsonObject watermarkJson) {
         context.assertEquals(watermarkJson.getString("title"), "The Dark Code");
         context.assertEquals(watermarkJson.getString("content"), "journal");
         context.assertEquals(watermarkJson.getString("author"), "Bruce Wayne");
