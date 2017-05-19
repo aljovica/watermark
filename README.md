@@ -8,26 +8,28 @@ The watermark process is simulated with a timer. The timer be configured in the 
 Three endpoints are exposed:
 
 1. POST /v1/document with a following body:
-```
-{
-  "content": "journal",
-  "title": "The Dark Code",
-  "author": "Bruce Wayne"
-}
-```
-It is returning an id in this format:
-```
-{
-  "id": "6f3769db-8ba4-4071-b9f8-aa8d08de06b7"
-}
-```
+    ```
+    {
+      "content": "journal",
+      "title": "The Dark Code",
+      "author": "Bruce Wayne"
+    }
+    ```
+    It is returning an id in this format:
+    ```
+    {
+      "id": "6f3769db-8ba4-4071-b9f8-aa8d08de06b7"
+    }
+    ```
 2. GET /v1/document/{id} where the id is the result from the first endpoint and is returning following body:
-```
-{
-  "watermark": "watermark-journal-Bruce Wayne-The Dark Code",
-  "title": "The Dark Code",
-  "author": "Bruce Wayne",
-  "content": "journal"
-}
-```
-3. HEAD /v1/document/{id} Has no body, but writes a header named "watermarked" with either "done" or "in progress" 
+    ```
+    {
+      "watermark": "watermark-journal-Bruce Wayne-The Dark Code",
+      "title": "The Dark Code",
+      "author": "Bruce Wayne",
+      "content": "journal"
+    }
+    ```
+3. HEAD /v1/document/{id} 
+
+    Has no body, but writes a header named "watermarked" with either "done" or "in progress" 
