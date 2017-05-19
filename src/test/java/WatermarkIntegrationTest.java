@@ -33,7 +33,7 @@ public class WatermarkIntegrationTest {
     }
 
     @Test
-    public void test(TestContext context) {
+    public void shouldWatermarkDocument(TestContext context) {
         Async async = context.async();
 
         vertx.deployVerticle(MainVerticle.class.getName(), event -> {
