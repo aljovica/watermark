@@ -59,9 +59,9 @@ public class DocumentService extends AbstractVerticle {
         String title = body.getString("title");
         String author = body.getString("author");
         String content = body.getString("content");
-        String topic = body.getString("topic");
 
         if (content.equals(Book.CONTENT)) {
+            String topic = body.getString("topic");
             return new Book(title, author, topic);
         } else {
             return new Journal(title, author);
