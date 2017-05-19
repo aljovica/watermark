@@ -17,7 +17,7 @@ import static java.lang.String.valueOf;
 public class WatermarkIntegrationTest {
 
     private static final String HOST = "localhost";
-    private static final String DOCUMENT_RESOURCE = "/document";
+    private static final String DOCUMENT_RESOURCE = "/v1/document";
     private static final String WATERMARK = "watermark";
     private static final String DOCUMENT_ID = "id";
     private static final int PORT = 8080;
