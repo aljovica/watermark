@@ -22,7 +22,13 @@ Three endpoints are exposed:
       "id": "6f3769db-8ba4-4071-b9f8-aa8d08de06b7"
     }
     ```
-2. GET /v1/document/{id} where the id is the result from the first endpoint and is returning following body:
+    
+2. HEAD /v1/document/{id} 
+
+    Has no body, but writes a header named "watermarked" with either "done" or "in progress". The id parameter is 
+    the result of the previous request. 
+    
+3. GET /v1/document/{id} is returning following body:
     ```
     {
       "watermark": "watermark-journal-Bruce Wayne-The Dark Code",
@@ -31,6 +37,3 @@ Three endpoints are exposed:
       "content": "journal"
     }
     ```
-3. HEAD /v1/document/{id} 
-
-    Has no body, but writes a header named "watermarked" with either "done" or "in progress" 

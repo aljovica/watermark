@@ -4,6 +4,8 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import model.Book;
 import model.Document;
 import model.Journal;
@@ -13,11 +15,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import static addresses.Addresses.DOCUMENT_CREATE_ADDRESS;
-import static addresses.Addresses.WATERMARK_FINISHED_ADDRESS;
 import static addresses.Addresses.DOCUMENT_GET_ADDRESS;
+import static addresses.Addresses.WATERMARK_FINISHED_ADDRESS;
 import static java.lang.String.format;
 
 public class DocumentService extends AbstractVerticle {
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
+
     private static final String WATERMARK_DELAY_CONFIG_KEY = "watermark.delay";
 
     private Map<String, Document> watermarkStorage = new HashMap<>();
@@ -65,6 +69,7 @@ public class DocumentService extends AbstractVerticle {
     }
 
     private void simulateWatermarkProcess(String uuid, Document document) {
+        LOG.info("Creating watermark");
         Integer delay = config().getInteger(WATERMARK_DELAY_CONFIG_KEY);
 
         vertx.setTimer(delay, event -> {

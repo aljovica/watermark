@@ -4,6 +4,8 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -12,6 +14,7 @@ import model.Journal;
 
 import static addresses.Addresses.DOCUMENT_CREATE_ADDRESS;
 import static addresses.Addresses.DOCUMENT_GET_ADDRESS;
+import static io.netty.handler.codec.http.HttpResponseStatus.ACCEPTED;
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNPROCESSABLE_ENTITY;
 import static io.vertx.core.http.HttpMethod.GET;
@@ -21,8 +24,9 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 public class DocumentController extends AbstractVerticle {
-    private static final String PORT_CONFIG_KEY = "server.port";
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentController.class);
 
+    private static final String PORT_CONFIG_KEY = "server.port";
     private static final String POST_DOCUMENT = "/v1/document";
     private static final String GET_DOCUMENT = "/v1/document/:id";
     private static final String DOCUMENT_ID = "id";
@@ -43,23 +47,29 @@ public class DocumentController extends AbstractVerticle {
     }
 
     private void handleCreateDocument(RoutingContext routingContext) {
+        LOG.info("Creating document");
+
         JsonObject requestBody = routingContext.getBodyAsJson();
         HttpServerResponse response = routingContext.response();
 
-        if (!contentExists(requestBody.getString("content"))) {
-            response.setStatusCode(UNPROCESSABLE_ENTITY.code());
-            response.end();
+        if (!validate(requestBody)) {
+            LOG.error("request body is not valid");
+            response.setStatusCode(UNPROCESSABLE_ENTITY.code()).end();
             return;
         }
 
         vertx.eventBus().send(DOCUMENT_CREATE_ADDRESS, requestBody, responseEvent -> {
             String uuid = (String) responseEvent.result().body();
             String responseBody = new JsonObject().put("id", uuid).encode();
-            response.putHeader("Content-Type", "application/json").end(responseBody);
+
+            response.putHeader("Content-Type", "application/json")
+                    .setStatusCode(ACCEPTED.code())
+                    .end(responseBody);
         });
     }
 
     private void handleGetDocument(RoutingContext routingContext) {
+        LOG.info("Fetching document");
         HttpServerResponse response = routingContext.response();
         String id = routingContext.request().getParam(DOCUMENT_ID);
 
@@ -90,7 +100,18 @@ public class DocumentController extends AbstractVerticle {
         });
     }
 
-    private boolean contentExists(String content) {
-        return asList(Book.CONTENT, Journal.CONTENT).contains(content);
+    private boolean validate(JsonObject body) {
+        boolean rightContent = asList(Book.CONTENT, Journal.CONTENT).contains(body.getString("content"));
+        boolean authorNotNull = body.getString("author") != null;
+        boolean titleNotNull = body.getString("title") != null;
+
+        boolean valid = rightContent && authorNotNull && titleNotNull;
+
+        if (body.getString("content").equals(Book.CONTENT)) {
+            boolean topicNotNull = body.getString("topic") != null;
+            return valid && topicNotNull;
+        }
+
+        return valid;
     }
 }
