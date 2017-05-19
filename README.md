@@ -3,6 +3,7 @@ To run and build (with tests) the application just run the following command:
 ./build-and-run-app.sh
 ```
 To application is running on localhost:8080, but it can be changed in application-configuration.json file.
+The watermark process is simulated with a timer. The timer be configured in the same config file.
 
 Three endpoints are exposed:
 
@@ -29,4 +30,4 @@ It is returning an id in this format:
   "content": "journal"
 }
 ```
-3. HEAD /v1/document/{id} Has no body, but writes a header named "watermarked" with either "done" or "in progress"
+3. HEAD /v1/document/{id} Has no body, but writes a header named "watermarked" with either "done" or "in progress" 
