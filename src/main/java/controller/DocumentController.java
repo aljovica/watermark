@@ -23,8 +23,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class DocumentController extends AbstractVerticle {
     private static final String PORT_CONFIG_KEY = "server.port";
 
-    private static final String POST_DOCUMENT = "/document";
-    private static final String GET_DOCUMENT = "/document/:id";
+    private static final String POST_DOCUMENT = "/v1/document";
+    private static final String GET_DOCUMENT = "/v1/document/:id";
     private static final String DOCUMENT_ID = "id";
 
     @Override
