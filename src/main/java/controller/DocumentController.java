@@ -60,7 +60,7 @@ public class DocumentController extends AbstractVerticle {
 
         vertx.eventBus().send(DOCUMENT_CREATE_ADDRESS, requestBody, responseEvent -> {
             String uuid = (String) responseEvent.result().body();
-            String responseBody = new JsonObject().put("id", uuid).encode();
+            String responseBody = new JsonObject().put(DOCUMENT_ID, uuid).encode();
 
             response.putHeader("Content-Type", "application/json")
                     .setStatusCode(ACCEPTED.code())
